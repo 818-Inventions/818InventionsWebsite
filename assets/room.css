@@ -295,9 +295,106 @@ svg { display: block; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .roach, .roach .f1, .roach .f2, .press, .item:hover svg, .item:focus-visible svg { animation: none; }
+  .roach, .roach .f1, .roach .f2, .press, .case-glass, .item:hover svg, .item:focus-visible svg { animation: none; }
   .roach .f2 { opacity: 0; }
 }
+
+/* "In case of roaches": the slipper in a red wall case, like a fire extinguisher */
+.slipper-spot {
+  position: absolute;
+  z-index: 4;
+  top: 18px;
+  right: max(16px, calc(50% - 390px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+}
+.case-sign {
+  padding: 5px 8px;
+  background: #c62828;
+  color: #fff;
+  font-size: 8px;
+  line-height: 1.5;
+  text-align: center;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+.case-glass {
+  display: block;
+  margin-top: 4px;
+  padding: 14px 12px;
+  border: 6px solid #c62828;
+  /* Glass with two pixel glare stripes */
+  background:
+    linear-gradient(135deg, transparent 0 30%, rgba(255, 255, 255, 0.45) 30% 34%, transparent 34% 40%, rgba(255, 255, 255, 0.3) 40% 42%, transparent 42%),
+    rgba(170, 215, 255, 0.35);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3), inset 0 0 0 2px #7f1515;
+  animation: alarm 1.6s steps(1) infinite;
+}
+.case-hint {
+  margin-top: 6px;
+  padding: 3px 6px;
+  background: var(--ink);
+  color: var(--gold);
+  font-size: 8px;
+}
+@keyframes alarm {
+  50% { border-color: #ff5a4f; }
+}
+.slipper-spot:hover .case-glass svg,
+.slipper-spot:focus-visible .case-glass svg { animation: hop 0.6s steps(3) infinite; }
+.slipper-spot:focus-visible { outline: 4px dashed #fff; outline-offset: 4px; }
+/* While you hold it, the case is empty */
+.armed .case-glass svg { opacity: 0.15; animation: none; }
+.armed .case-glass { animation: none; }
+
+.armed,
+.armed * { cursor: var(--slipper-cursor) !important; }
+.armed .roach { pointer-events: auto; }
+/* A bigger hit area than the tiny sprite, so they can actually be hit */
+.armed .roach::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+}
+
+.swing {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  transform: translate(-50%, -60%);
+}
+.swing svg { animation: swat 0.25s steps(3) both; transform-origin: 50% 90%; }
+.swing span {
+  position: absolute;
+  left: 50%;
+  top: -18px;
+  transform: translateX(-50%);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 #000;
+  white-space: nowrap;
+  animation: rise 0.7s steps(4) both;
+}
+@keyframes swat {
+  0% { transform: rotate(-40deg) scale(1.2); }
+  100% { transform: rotate(0) scale(1); }
+}
+@keyframes rise {
+  to { transform: translate(-50%, -20px); opacity: 0; }
+}
+.splat { z-index: 1; }
+.room.shake { animation: shake 0.2s steps(2); }
+@keyframes shake {
+  50% { transform: translate(3px, 2px); }
+}
+
+.hud-kills { color: #fff; }
 
 /* Floor */
 .floor {

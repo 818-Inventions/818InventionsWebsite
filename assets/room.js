@@ -147,6 +147,35 @@ const ROACH_FRAMES = [
   ]
 ];
 
+// A red dorm slipper seen from the side, toe to the right
+const SLIPPER = {
+  pal: { K: OUTLINE, R: '#e43b44', h: '#ff8a90', w: '#f4f1e8', S: '#3a3a4a' },
+  rows: [
+    '.............KKKKKK.....',
+    '...........KKRRRRRRKK...',
+    '..........KRhhRRRRRRRK..',
+    '.........KRRRRRRRRRRRRK.',
+    'KKKKKKKKKRRRRRRRRRRRRRRK',
+    'KwwwwwwwwwwwwwwwwwwwwwwK',
+    'KSSSSSSSSSSSSSSSSSSSSSSK',
+    '.KKKKKKKKKKKKKKKKKKKKKK.'
+  ]
+};
+
+const SPLAT = {
+  pal: { b: '#6b3a1e', d: '#2e170a', g: '#9fb33a' },
+  rows: [
+    '..d...d..d..',
+    'd..bbbb...d.',
+    '.bbgbbbbb...',
+    'bbbbggbbbbd.',
+    '.bbbbbbgbb..',
+    'd..bbbbbb..d',
+    '...d..bb.d..',
+    '.d.....d....'
+  ]
+};
+
 const WALLPAPER = {
   pal: { a: '#b8a77a', b: '#a8966a', c: '#7d6b45' },
   rows: [
@@ -370,9 +399,90 @@ function renderRoom() {
 
   renderWall(document.getElementById('room'));
   renderShelves();
+  setupSlipper();
 
   window.addEventListener('resize', () => {
     const cols = window.innerWidth < 600 ? 2 : 3;
     if (String(cols) !== document.getElementById('shelves').dataset.cols) renderShelves();
+  });
+}
+
+/* Grab the slipper and go after the cockroaches */
+
+function setupSlipper() {
+  const spot = document.getElementById('slipper');
+  const kills = document.getElementById('kills');
+  let armed = false;
+  let count = 0;
+
+  // Kept on the wall like a fire extinguisher
+  spot.innerHTML = `
+    <span class="case-sign">IN CASE OF<br>ROACHES</span>
+    <span class="case-glass">${sprite(SLIPPER.rows, SLIPPER.pal, 5)}</span>
+    <span class="case-hint">BREAK GLASS</span>`;
+  const cursor = sprite(SLIPPER.rows, SLIPPER.pal, 3);
+  document.body.style.setProperty('--slipper-cursor',
+    `url("data:image/svg+xml,${encodeURIComponent(cursor)}") 60 12, crosshair`);
+
+  const arm = on => {
+    armed = on;
+    document.body.classList.toggle('armed', on);
+    spot.setAttribute('aria-pressed', on);
+    spot.querySelector('.case-hint').textContent = on ? 'PUT IT BACK' : 'BREAK GLASS';
+  };
+
+  // A quick swing of the slipper wherever you hit, so taps on phones get feedback too
+  const swing = (x, y, text) => {
+    const fx = document.createElement('div');
+    fx.className = 'swing';
+    fx.style.left = x + 'px';
+    fx.style.top = y + 'px';
+    fx.innerHTML = sprite(SLIPPER.rows, SLIPPER.pal, 3) + `<span>${text}</span>`;
+    document.body.appendChild(fx);
+    setTimeout(() => fx.remove(), 700);
+  };
+
+  const squash = roachEl => {
+    const host = roachEl.parentElement;
+    const r = roachEl.getBoundingClientRect();
+    const h = host.getBoundingClientRect();
+    const mark = document.createElement('div');
+    mark.className = 'decor splat';
+    mark.style.left = (r.left - h.left) + 'px';
+    mark.style.top = (r.top - h.top) + 'px';
+    mark.innerHTML = sprite(SPLAT.rows, SPLAT.pal, 4);
+    host.appendChild(mark);
+
+    // A new one crawls out of the wall after a while
+    const cls = [...roachEl.classList].find(c => c.startsWith('roach-'));
+    roachEl.remove();
+    setTimeout(() => host.insertAdjacentHTML('beforeend', roach(cls)), 6000 + Math.random() * 6000);
+
+    count++;
+    kills.textContent = String(count).padStart(2, '0');
+    document.getElementById('room').classList.remove('shake');
+    void document.getElementById('room').offsetWidth;
+    document.getElementById('room').classList.add('shake');
+  };
+
+  spot.addEventListener('click', e => {
+    e.stopPropagation();
+    arm(!armed);
+  });
+
+  document.addEventListener('click', e => {
+    if (!armed) return;
+    const hit = e.target.closest('.roach');
+    if (hit) {
+      e.preventDefault();
+      squash(hit);
+      swing(e.clientX, e.clientY, 'SPLAT!');
+    } else if (!e.target.closest('a, .item')) {
+      swing(e.clientX, e.clientY, 'MISS');
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && armed) arm(false);
   });
 }
