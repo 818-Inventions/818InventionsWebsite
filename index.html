@@ -4,80 +4,72 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>818 Inventions</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)),
-                  url('https://cdn.wallpapersafari.com/4/52/lLRAJm.jpg') no-repeat center center fixed;
-      background-size: cover;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    header {
-      background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-      width: 100%;
-      padding: 20px 0;
-      text-align: center;
-      color: #fff;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .container {
-      background-color: #fff;
-      padding: 40px 20px;
-      border-radius: 10px;
-      text-align: center;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
-    }
-    h1 {
-      margin: 0;
-      font-size: 2.5rem;
-    }
-    h2 {
-      color: #333;
-      margin-bottom: 10px;
-    }
-    p {
-      color: #666;
-      font-size: 1.2rem;
-      margin-top: 0;
-    }
-    progress {
-      width: 100%;
-      height: 30px;
-      appearance: none;
-      margin-top: 15px;
-    }
-    progress::-webkit-progress-bar {
-      background-color: #eee;
-      border-radius: 10px;
-    }
-    progress::-webkit-progress-value {
-      background: linear-gradient(90deg, #76c7c0, #63a4ff);
-      border-radius: 10px;
-    }
-    progress::-moz-progress-bar {
-      background: linear-gradient(90deg, #76c7c0, #63a4ff);
-      border-radius: 10px;
-    }
-  </style>
+  <meta name="description" content="Small inventions that solve real problems. The goal: 818.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Special+Elite&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/steam.css">
 </head>
 <body>
-  <header>
-    <h1>818 Inventions</h1>
+  <!-- Shared gradients and patterns for the inline drawings -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="brass" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f5d98a"/><stop offset="0.45" stop-color="#c9973a"/><stop offset="1" stop-color="#6b4a1b"/>
+      </linearGradient>
+      <linearGradient id="brass-h" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#6b4a1b"/><stop offset="0.45" stop-color="#f5d98a"/><stop offset="1" stop-color="#6b4a1b"/>
+      </linearGradient>
+      <radialGradient id="brass-r" cx="0.35" cy="0.35" r="0.8">
+        <stop offset="0" stop-color="#f5d98a"/><stop offset="0.5" stop-color="#c9973a"/><stop offset="1" stop-color="#5a3d14"/>
+      </radialGradient>
+      <linearGradient id="copper" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f0a774"/><stop offset="0.5" stop-color="#b5652e"/><stop offset="1" stop-color="#5e2d12"/>
+      </linearGradient>
+      <radialGradient id="glass" cx="0.35" cy="0.35" r="0.8">
+        <stop offset="0" stop-color="#bfe6ee"/><stop offset="0.4" stop-color="#4f8a99"/><stop offset="1" stop-color="#16303a"/>
+      </radialGradient>
+      <pattern id="brick" width="48" height="24" patternUnits="userSpaceOnUse">
+        <rect width="48" height="24" fill="#2e1d14"/>
+        <rect x="1" y="1" width="46" height="10" fill="#8a4430"/>
+        <rect x="-23" y="13" width="46" height="10" fill="#7a3a28"/>
+        <rect x="25" y="13" width="46" height="10" fill="#94492f"/>
+      </pattern>
+    </defs>
+  </svg>
+
+  <header class="panel brass-plate">
+    <div class="panel-in">
+      <a class="title" href="./">818 Inventions</a>
+      <div class="readouts">
+        <div id="gauge" role="img" aria-label="Inventions gauge"></div>
+        <div class="readout">
+          <strong><span id="count">000</span> / <span id="goal">818</span></strong><br>
+          inventions built<br>
+          roaches squashed <span class="odo" id="kills"><b>0</b><b>0</b></span>
+        </div>
+      </div>
+    </div>
   </header>
-  <div class="container">
-    <h2>Progress Status</h2>
-    <p>3 out of 818 reached</p>
-    <progress value="3" max="818"></progress>
-  </div>
+
+  <main class="room" id="room">
+    <h1 class="sr-only">818 Inventions</h1>
+    <div id="wall-decor" aria-hidden="true"></div>
+
+    <div class="shelf-unit" id="shelves"></div>
+
+    <p class="press">~ Choose an invention ~</p>
+
+    <button class="slipper-spot" id="slipper" type="button" aria-pressed="false" aria-label="Grab the slipper to swat cockroaches"></button>
+  </main>
+
+  <footer class="floor">
+    <div>&copy; 818 Inventions</div>
+    <div>Made behind door 818</div>
+  </footer>
+
+  <script src="assets/projects.js"></script>
+  <script src="assets/steam.js"></script>
+  <script>renderWorkshop();</script>
 </body>
 </html>
